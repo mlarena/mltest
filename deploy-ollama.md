@@ -50,6 +50,8 @@ ollama pull phi3:latest        # 2.2 ГБ, хорошая логика
 ollama pull llama3.2:3b        # 2.0 ГБ, универсальная
 ollama pull gemma2:2b          # 1.6 ГБ, от Google
 ollama pull moondream:latest   # 1.7 ГБ, мультимодальная (работа с изображениями)
+ollama pull deepseek-r1:1.5b   # Рекомендуемая модель для тестов
+ollama pull deepseek-r1:7b      # Для стресс-теста производительности (опционально)
 
 # Проверить, что модели скачались
 ollama list

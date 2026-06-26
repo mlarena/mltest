@@ -51,6 +51,19 @@ download_model "tinyllama:1.1b"
 download_model "phi3:latest"
 download_model "llama3.2:3b"
 download_model "gemma2:2b"
+
+download_model "deepseek-r1:1.5b"
+download_model "deepseek-r1:7b"
+#download_model "mistral:latest"
+#download_model "ministral:latest"
+#download_model "mistral-nemo:latest"
+download_model "deepseek-coder:6.7b"
+download_model "qwen2.5-coder:7b"
+download_model "solar:10.7b"
+
+# Command R 35B — если захотите попробовать что-то очень большое (около 20 ГБ) — НЕ РЕКОМЕНДУЮ для 32 ГБ ОЗУ!
+# ollama pull command-r:latest
+
 # download_model "moondream:latest"  # раскомментируйте, если нужна
 
 echo -e "${GREEN}Скачанные модели:${NC}"

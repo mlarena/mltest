@@ -1,0 +1,30 @@
+nohup ./deploy-ollama.sh > deploy.log 2>&1 &
+tail -f deploy.log
+
+# Установка и запуск глубокого сканирования
+pip install briar-pentest
+briar setup  # Выбрать Ollama
+briar scan -u http://192.168.192.143 --deep
+
+--
+
+# Автоматическая установка
+curl -sO https://raw.githubusercontent.com/lxrxvci/ALAPA-Agent/main/setup.sh && chmod +x setup.sh && ./setup.sh
+
+--
+
+
+RapidPen / AutoPentester — исследовательские фреймворки, которые начинают с одного IP-адреса и автономно сканируют сервисы, выбирают векторы атак и выполняют эксплойты, достигая shell-доступа . Они используют продвинутые техники планирования, такие как ReAct и RAG 
+
+--
+OWASP ZAP — промышленный стандарт для тестирования безопасности веб-приложений. Его можно автоматизировать через API или Docker для сканирования локальных целей. Ключевая особенность — импорт спецификаций OpenAPI для сканирования API .
+
+docker run --rm -v $(pwd):/zap/wrk/:rw -i owasp/zap2docker-stable zap-full-scan.py -t http://192.168.192.143 -g zap-report.html -r zap-report.xml
+
+
+---
+
+secator — швейцарский нож пентестера, который объединяет десятки инструментов (nmap, nuclei, ffuf, wpscan и др.) в одном интерфейсе . Это простой способ запустить комплексное сканирование веб-приложения и сети без настройки каждого инструмента отдельно.
+
+pip install secator
+secator scan http://192.168.192.143
