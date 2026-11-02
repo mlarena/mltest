@@ -45,7 +45,9 @@ echo "=== 4. Запуск API-сервера Kali ==="
 pkill -f kali-server-mcp 2>/dev/null || true
 sleep 1
 
-nohup kali-server-mcp --ip 127.0.0.1 --port 5000 > ~/kali_api.log 2>&1 &
+
+nohup /usr/bin/python3 /usr/share/mcp-kali-server/server.py --ip 127.0.0.1 --port 5000 > ~/kali_api.log 2>&1 &
+
 API_PID=$!
 echo "API-сервер запущен (PID: $API_PID)"
 sleep 3
