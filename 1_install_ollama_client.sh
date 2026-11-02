@@ -1,40 +1,62 @@
 #!/bin/bash
-# install_ollama_client.sh
+# setup_models_multi.sh
 # Запускать на VM1 (Ubuntu/Debian) с правами sudo
+# ВНИМАНИЕ: на CPU-виртуалке загрузка и запуск 10B модели будут ОЧЕНЬ медленными
 
 set -e
 
-echo "=== 1. Установка Ollama ==="
-curl -fsSL https://ollama.com/install.sh | sh
+KALI_IP="10.10.10.20"          # <-- IP вашей Kali VM
+KALI_PORT="5000"
+CLIENT_VENV="$HOME/ollmcp-venv"
 
-echo "=== 2. Запуск сервиса Ollama ==="
-sudo systemctl enable --now ollama
-sleep 2
+echo "=== 1. Установка Ollama (если ещё не установлена) ==="
+if ! command -v ollama &> /dev/null; then
+    curl -fsSL https://ollama.com/install.sh | sh
+    sudo systemctl enable --now ollama
+    sleep 2
+else
+    echo "Ollama уже установлена."
+fi
 ollama --version
 
-echo "=== 3. Загрузка модели (пример: qwen2.5:7b) ==="
-# Для CPU-режима лучше брать модель поменьше, например qwen2.5:3b или 7b
+echo "=== 2. Загрузка моделей ==="
+
+# --- Маленькие модели (быстрые на CPU) ---
+echo "--- Llama 3.2 3B ---"
+ollama pull llama3.2:3b
+
+echo "--- Qwen2.5-Coder 1.5B ---"
+ollama pull qwen2.5-coder:1.5b
+
+# --- Средние модели (медленнее, но умнее) ---
+echo "--- Qwen2.5 7B ---"
 ollama pull qwen2.5:7b
 
-echo "=== 4. Установка Python-клиента ollmcp ==="
-# Требуется Python 3.10+
-sudo apt update
-sudo apt install -y python3 python3-pip python3-venv
+echo "--- Llama 3.1 8B ---"
+ollama pull llama3.1:8b
 
-# Рекомендуется использовать venv, чтобы не засорять систему
-python3 -m venv ~/ollmcp-venv
-source ~/ollmcp-venv/bin/activate
+# --- Mythoseek 10B (специализированная security-модель) ---
+# В реестре Ollama её нет. Используем GGUF с HuggingFace через hf.co/ shortcut.
+# Q4_K_M — разумный компромисс качества/размера (около 5.7 GB по данным карточки модели).
+echo "--- Mythoseek 10B (Q4_K_M, ~5.7GB) ---"
+ollama run hf.co/mradermacher/Mythoseek-GGUF:Q4_K_M
+
+echo "=== 3. Проверка загруженных моделей ==="
+ollama list
+
+echo "=== 4. Установка Python-клиента ollmcp (если ещё нет) ==="
+if [ ! -d "$CLIENT_VENV" ]; then
+    sudo apt update
+    sudo apt install -y python3 python3-pip python3-venv
+    python3 -m venv "$CLIENT_VENV"
+fi
+source "$CLIENT_VENV/bin/activate"
 pip install --upgrade pip
 pip install ollmcp
 
-echo "=== 5. Запуск клиента для подключения к Kali ==="
-# ВАЖНО: замените KALI_IP на реальный IP вашей Kali VM
-KALI_IP="10.10.10.20"  # <-- ИЗМЕНИТЕ ПРИ НЕОБХОДИМОСТИ
-
-echo "Клиент запустится в интерактивном режиме."
-echo "Убедитесь, что на Kali уже запущен MCP-сервер."
-echo "Команда: ollmcp --mcp-server-url http://${KALI_IP}:5000 --model qwen2.5:7b"
+echo "=== 5. Готово. Команды для запуска клиента с нужной моделью: ==="
+echo "source $CLIENT_VENV/bin/activate"
+echo "ollmcp --mcp-server-url http://${KALI_IP}:${KALI_PORT} --model <MODEL_NAME>"
 echo ""
-
-# Раскомментируйте строку ниже для автоматического запуска клиента
-# ollmcp --mcp-server-url "http://${KALI_IP}:5000" --model "qwen2.5:7b"
+echo "Доступные модели (из ollama list):"
+ollama list
