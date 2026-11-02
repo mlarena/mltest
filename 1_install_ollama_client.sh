@@ -5,7 +5,7 @@
 
 set -e
 
-KALI_IP="10.10.10.20"          # <-- IP вашей Kali VM
+KALI_IP="192.168.235.136"          # <-- IP вашей Kali VM
 KALI_PORT="5000"
 CLIENT_VENV="$HOME/ollmcp-venv"
 
